@@ -1,0 +1,25 @@
+{
+	"nodes":[
+		{"id":"27e30fa454854e79","type":"file","file":"Areas/Education_sstu/Information_technology_and_programming/Lesson 1/photos/Видеокарта.png","x":480,"y":-550,"width":400,"height":216},
+		{"id":"03b5330ba837a980","type":"file","file":"Areas/Education_sstu/Information_technology_and_programming/Lesson 1/photos/Кнопка включения.png","x":400,"y":-1480,"width":400,"height":400},
+		{"id":"79a255ac1925e76e","type":"file","file":"Areas/Education_sstu/Information_technology_and_programming/Lesson 1/photos/Материнская плата.png","x":-160,"y":-512,"width":400,"height":356},
+		{"id":"7dd3c8ff67c8a54b","type":"file","file":"Areas/Education_sstu/Information_technology_and_programming/Lesson 1/photos/Блок питания.png","x":-440,"y":-1080,"width":400,"height":392},
+		{"id":"11ddf396aca23471","type":"file","file":"Areas/Education_sstu/Information_technology_and_programming/Lesson 1/photos/Розетка.png","x":-709,"y":-1680,"width":309,"height":399},
+		{"id":"6e94947993e7d290","type":"file","file":"Areas/Education_sstu/Information_technology_and_programming/Lesson 1/photos/Процессор.png","x":280,"y":80,"width":400,"height":383},
+		{"id":"935df88ea11f26f6","type":"file","file":"Areas/Education_sstu/Information_technology_and_programming/Lesson 1/photos/Оперативная_память.png","x":-600,"y":157,"width":400,"height":306},
+		{"id":"6cb851f09ab6a46c","type":"file","file":"Areas/Education_sstu/Information_technology_and_programming/Lesson 1/photos/Монитор.png","x":-1520,"y":-819,"width":400,"height":263},
+		{"id":"95f3cfa308b7b5ed","type":"file","file":"Areas/Education_sstu/Information_technology_and_programming/Lesson 1/photos/Клавиатура.png","x":-1520,"y":-512,"width":722,"height":334},
+		{"id":"ca408c651c2968b0","type":"file","file":"Areas/Education_sstu/Information_technology_and_programming/Lesson 1/photos/Мышь.png","x":-1040,"y":-1005,"width":242,"height":242}
+	],
+	"edges":[
+		{"id":"c2144a62afe3c6e0","fromNode":"11ddf396aca23471","fromSide":"bottom","toNode":"7dd3c8ff67c8a54b","toSide":"top"},
+		{"id":"2e9fc3f39444486c","fromNode":"7dd3c8ff67c8a54b","fromSide":"bottom","toNode":"79a255ac1925e76e","toSide":"top"},
+		{"id":"b511e687ab6839b9","fromNode":"27e30fa454854e79","fromSide":"left","toNode":"79a255ac1925e76e","toSide":"right"},
+		{"id":"c4c55c1aed5742d1","fromNode":"03b5330ba837a980","fromSide":"bottom","toNode":"79a255ac1925e76e","toSide":"top"},
+		{"id":"2fb307bb2fba81a2","fromNode":"6e94947993e7d290","fromSide":"top","toNode":"79a255ac1925e76e","toSide":"bottom"},
+		{"id":"7d77016a6261acd6","fromNode":"935df88ea11f26f6","fromSide":"top","toNode":"79a255ac1925e76e","toSide":"bottom"},
+		{"id":"c62a6eaf2342d3d3","fromNode":"ca408c651c2968b0","fromSide":"right","toNode":"79a255ac1925e76e","toSide":"left"},
+		{"id":"d5304180dd7b935e","fromNode":"95f3cfa308b7b5ed","fromSide":"right","toNode":"79a255ac1925e76e","toSide":"left"},
+		{"id":"51602183ade14b62","fromNode":"6cb851f09ab6a46c","fromSide":"right","toNode":"79a255ac1925e76e","toSide":"left"}
+	]
+}
