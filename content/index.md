@@ -16,6 +16,7 @@
 1. [Основные компоненты компьютера, как он работает, как выбрать комплектующие компьютера](<2025-09-01 Lesson 1 - Information technology and programming - ИАИТ-111.md>)
 2. [Булевы функции](<2025-09-12 Lesson 2 - Information technology and programming - ИАИТ-111>)
 3. [Основы python](<Lesson 3 - Information technology and programming - ИАИТ-111>)
+4. [Циклы for и while](<Lesson 4 - Information technology and programming - ИАИТ-111>)
 ---
 
 ## 📞 Контакты
