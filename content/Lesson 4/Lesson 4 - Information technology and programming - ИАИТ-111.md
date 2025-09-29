@@ -12,7 +12,7 @@ fullDay:
 
 Сегодня мы рассмотрим циклы for и while.
 
-- 
+-  [For и while](<For и While>)
 
 ## Домашнее задание
 
