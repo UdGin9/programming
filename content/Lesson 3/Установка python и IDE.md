@@ -1,5 +1,5 @@
 Чтобы установить Python на компьютер, нужно скачать дистрибутив с официального сайта. В выпадающем меню вкладки Downloads по умолчанию появится последняя версия для операционной системы пользователя.
-
+ 
 ![[Python.png]]
 
 Сссылка на сайт python: https://www.python.org/doc/versions/
@@ -35,6 +35,7 @@ apt-get install python(version)
   
 _brew install python[version]_
 
+powerShell
 
 # Установка IDE
 

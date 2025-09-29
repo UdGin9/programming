@@ -20,4 +20,4 @@ fullDay:
 	- [Условный оператор if-else](<Условный оператор>)
 ## Домашнее задание
 
-- [Тыкни сюда](<Домашнее задание>)
+- [Тыкни сюда](<Areas/Education_sstu/Information_technology_and_programming/Lesson 3/Домашнее задание.md>)
