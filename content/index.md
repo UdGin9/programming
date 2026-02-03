@@ -19,6 +19,7 @@
 4. [Циклы for и while](<Lesson 4 - Information technology and programming - ИАИТ-111>)
 5. [Блок схемы](<Lesson 5 - Information technology and programming - ИАИТ-111>)
 6. [Функции и списки](<Lesson 6 - Information technology and programming - ИАИТ-111>)
+7. [UV, flask и верстка](<Lesson 7 - Information technology and programming - ИАИТ-111>)
 ---
 
 ## 📞 Контакты
