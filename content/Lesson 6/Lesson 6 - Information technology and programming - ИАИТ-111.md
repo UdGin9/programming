@@ -15,4 +15,4 @@ fullDay:
 
 ## Домашнее задание
 
-- [Тык](Areas/Education_sstu/Information_technology_and_programming/Lesson%206/ДЗ.md)
+- [Тык](ДЗ)
