@@ -18,4 +18,4 @@ fullDay:
 - https://developer.mozilla.org/ru/docs/Web/HTML/Reference/Elements/img
 ## Домашнее задание
 
-- [Тык](Areas/Education_sstu/Information_technology_and_programming/Lesson%207/ДЗ.md)
+- [Тык](<Areas/Education_sstu/Information_technology_and_programming/Lesson%207/ДЗ.md>)
