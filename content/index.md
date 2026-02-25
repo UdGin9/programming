@@ -15,7 +15,7 @@
 5. [Блок схемы](<Lesson 5 - Information technology and programming - ИАИТ-111>)
 6. [Функции и списки](<Lesson 6 - Information technology and programming - ИАИТ-111>)
 7. [UV, flask и верстка](<Lesson 7 - Information technology and programming - ИАИТ-111>)
-8. [Numpy](<>)
+8. [Numpy](<Lesson 8 - Information technology and programming - ИАИТ-111>)
 ---
 
 ## 📞 Контакты
