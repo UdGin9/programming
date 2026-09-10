@@ -8,14 +8,13 @@
 
 Ниже представлены ссылки на материалы по каждому занятию:
 
-1. [Основные компоненты компьютера, как он работает, как выбрать комплектующие компьютера](<2025-09-01 Lesson 1 - Information technology and programming - ИАИТ-111.md>)
-2. [Булевы функции](<2025-09-12 Lesson 2 - Information technology and programming - ИАИТ-111>)
+1. [Булевы функции](<Lesson 1 - Information technology and programming - ИАИТ-111>)
+2. [Блок схемы](<Lesson 2 - Information technology and programming - ИАИТ-111>)
 3. [Основы python](<Lesson 3 - Information technology and programming - ИАИТ-111>)
 4. [Циклы for и while](<Lesson 4 - Information technology and programming - ИАИТ-111>)
-5. [Блок схемы](<Lesson 5 - Information technology and programming - ИАИТ-111>)
-6. [Функции и списки](<Lesson 6 - Information technology and programming - ИАИТ-111>)
-7. [UV, flask и верстка](<Lesson 7 - Information technology and programming - ИАИТ-111>)
-8. [Numpy](<Lesson 8 - Information technology and programming - ИАИТ-111>)
+5. [Функции и списки](<Lesson 5 - Information technology and programming - ИАИТ-111>)
+6. [UV, flask и верстка](<Lesson 6 - Information technology and programming - ИАИТ-111>)
+7. [Numpy](<Lesson 7 - Information technology and programming - ИАИТ-111>)
 ---
 
 ## 📞 Контакты

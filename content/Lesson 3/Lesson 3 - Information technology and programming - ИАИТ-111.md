@@ -1,8 +1,5 @@
 ---
 title: Lesson 3 - Information technology and programming - ИАИТ-111
-startTime: 15:40
-endTime: 17:15
-date: 2025-09-26
 completed: false
 fullDay:
 ---
