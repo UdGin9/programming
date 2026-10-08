@@ -5,14 +5,14 @@ fullDay:
 ---
 # Занятие № 6
 
-## Полезные материалы
+## Материалы
 
-- https://habr.com/ru/articles/875840/
-- https://flask.palletsprojects.com/en/stable/
-- https://habr.com/ru/articles/783574/
-- https://habr.com/ru/articles/655009/
-- https://htmlbook.ru/samhtml/tipy-tegov/blochnye-elementy
-- https://developer.mozilla.org/ru/docs/Web/HTML/Reference/Elements/img
+Сегодня три темы: работа со строками, как устроены задачи с автоматической проверкой и как оценить, насколько быстро работает алгоритм.
+
+- [Строки](<Строки>)
+- [Задачи с автопроверкой](<Задачи с автопроверкой>)
+- [Сложность алгоритмов](<Сложность алгоритмов>)
+
 ## Домашнее задание
 
-- [Тык](<Areas/Education_sstu/Information_technology_and_programming/Lesson%206/ДЗ.md>)
+- [Тык](<Домашнее задание 6.md>)

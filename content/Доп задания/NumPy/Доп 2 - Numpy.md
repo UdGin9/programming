@@ -1,9 +1,9 @@
 ---
-title: Lesson 7 - Information technology and programming - ИАИТ-111
+title: Доп 2 - Numpy
 completed: false
 fullDay:
 ---
-# Занятие № 7
+# Доп задание № 2
 
 ## Полезные материалы
 

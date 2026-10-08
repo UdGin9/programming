@@ -16,6 +16,8 @@ const config: QuartzConfig = {
     "private",
     "templates",
     ".obsidian",
+    "Lesson 6",
+    "Lesson 7",
   ],
     defaultDateType: "modified",
     theme: {
