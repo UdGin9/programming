@@ -14,6 +14,7 @@
 4. [Циклы for и while](<Lesson 4 - Information technology and programming - ИАИТ-111>)
 5. [Функции и списки](<Lesson 5 - Information technology and programming - ИАИТ-111>)
 6. [Строки, автопроверка и сложность алгоритмов](<Lesson 6 - Information technology and programming - ИАИТ-111>)
+7. [Сортировки](<Lesson 7 - Information technology and programming - ИАИТ-111>)
 
 ## ➕ Доп задания
 

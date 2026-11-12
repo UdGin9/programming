@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Анимации сортировок</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Source+Sans+Pro:wght@400;600;700&display=swap">
+<style>
+:root {
+  --bg: #faf8f8;
+  --panel: #ffffff;
+  --border: #e5e5e5;
+  --text: #2b2b2b;
+  --muted: #6b6b6b;
+  --accent: #284b63;
+  --accent-text: #ffffff;
+  --bar: #b7c5cf;
+  --cmp: #e3a33b;
+  --swap: #d65f5f;
+  --done: #5f9e78;
+  --special: #8a63c2;
+  --part: #b5d5c1;
+  --taken: #e9e6e6;
+  --code-bg: #f4f2f2;
+  --line-hl: rgba(227, 163, 59, 0.25);
+  --kw: #284b63;
+  --num: #a0522d;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --bg: #161618;
+  --panel: #1d1d20;
+  --border: #393639;
+  --text: #ebebec;
+  --muted: #a3a3a3;
+  --accent: #7b97aa;
+  --accent-text: #161618;
+  --bar: #56697a;
+  --cmp: #e0aa4c;
+  --swap: #e2706b;
+  --done: #6cb489;
+  --special: #a586d6;
+  --part: #3c6a4f;
+  --taken: #2a2a2e;
+  --code-bg: #202024;
+  --line-hl: rgba(224, 170, 76, 0.22);
+  --kw: #8fb3cc;
+  --num: #e0a37a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+body { font-family: "Source Sans Pro", system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 15px; line-height: 1.4; }
+#app { padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--panel); }
+.head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-bottom: 12px; }
+.title { font-weight: 700; font-size: 16px; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend i { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+.main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+@media (min-width: 700px) {
+  .main.with-code { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
+}
+.vis { min-width: 0; }
+.msg { margin-top: 10px; min-height: 42px; font-size: 14px; padding: 8px 10px; border-radius: 8px; background: var(--code-bg); }
+pre.code { margin: 0; padding: 10px 0; background: var(--code-bg); border-radius: 8px; font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 12.5px; line-height: 1.55; overflow-x: auto; align-self: start; }
+pre.code div { padding: 0 12px 0 10px; border-left: 3px solid transparent; white-space: pre; }
+pre.code div.cur { background: var(--line-hl); border-left-color: var(--cmp); }
+pre.code .kw { color: var(--kw); font-weight: 600; }
+pre.code .num { color: var(--num); }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+button, select { font: inherit; font-size: 14px; color: var(--text); background: var(--panel); border: 1px solid var(--border); border-radius: 7px; padding: 5px 11px; cursor: pointer; }
+button:hover, select:hover { border-color: var(--muted); }
+button:disabled { opacity: 0.45; cursor: default; }
+button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); min-width: 92px; }
+label.ctl { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--muted); }
+input[type="range"] { width: 100px; accent-color: var(--accent); }
+.stats { margin-top: 10px; font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.stats b { color: var(--text); font-weight: 600; }
+
+/* столбики */
+.bars { display: flex; align-items: flex-end; gap: 4px; height: 190px; padding: 0 2px; }
+.col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+.bar { width: 100%; border-radius: 4px 4px 0 0; background: var(--bar); transition: height 0.18s ease, background-color 0.18s ease; }
+.val { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px; font-weight: 600; margin-top: 4px; }
+.idx { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10.5px; color: var(--muted); }
+.bar.cmp { background: var(--cmp); }
+.bar.swap { background: var(--swap); }
+.bar.done { background: var(--done); }
+.bar.special { background: var(--special); }
+.bar.part { background: var(--part); }
+
+/* клетки */
+.rows { display: flex; flex-direction: column; gap: 10px; }
+.row { display: flex; align-items: flex-start; gap: 8px; }
+.row-name { width: 54px; flex: none; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px; color: var(--muted); padding-top: 18px; text-align: right; }
+.cells { display: flex; flex-wrap: wrap; gap: 4px; }
+.cellwrap { display: flex; flex-direction: column; align-items: center; width: 34px; }
+.cap { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10.5px; color: var(--muted); height: 15px; }
+.cap.ptr { color: var(--cmp); font-weight: 700; font-size: 12px; }
+.cell { width: 34px; height: 34px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); display: flex; align-items: center; justify-content: center; font-family: "IBM Plex Mono", ui-monospace, monospace; font-weight: 600; font-size: 14px; transition: background-color 0.18s ease; }
+.cell.empty { color: transparent; border-style: dashed; }
+.cell.taken { background: var(--taken); color: var(--muted); }
+.cell.cmp { background: var(--cmp); }
+.cell.swap { background: var(--swap); }
+.cell.done { background: var(--done); }
+.cell.special { background: var(--special); }
+.cell.cmp, .cell.swap, .cell.done, .cell.special { color: #fff; border-color: transparent; }
+:root[data-theme="dark"] .cell.cmp, :root[data-theme="dark"] .cell.swap, :root[data-theme="dark"] .cell.done, :root[data-theme="dark"] .cell.special { color: #161618; }
+
+/* гонка */
+.race { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+@media (min-width: 600px) { .race { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.lane { border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+.lane h4 { margin: 0 0 8px; font-size: 14px; }
+.lane .bars { height: 120px; gap: 2px; }
+.lane .val, .lane .idx { display: none; }
+.lane .lstats { font-size: 12.5px; color: var(--muted); margin-top: 8px; min-height: 36px; }
+.lane .lstats b { color: var(--text); }
+.lane.finished { border-color: var(--done); }
+.place { color: var(--done); font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="head"><span class="title"></span><span class="legend"></span></div>
+  <div class="main">
+    <div class="vis">
+      <div class="stage"></div>
+      <div class="msg" aria-live="polite"></div>
+    </div>
+    <pre class="code"></pre>
+  </div>
+  <div class="controls">
+    <button data-act="reset" title="В начало">⏮ Сброс</button>
+    <button data-act="back" title="Шаг назад (←)">◀ Назад</button>
+    <button data-act="play" class="primary" title="Пробел">▶ Авто</button>
+    <button data-act="step" title="Шаг вперёд (→)">Шаг ▶</button>
+    <button data-act="new">🎲 Новый массив</button>
+    <label class="ctl arrtype">Массив
+      <select>
+        <option value="random">случайный</option>
+        <option value="almost">почти отсортированный</option>
+        <option value="reversed">обратный</option>
+      </select>
+    </label>
+    <label class="ctl">Скорость <input type="range" min="1" max="10" value="5"></label>
+  </div>
+  <div class="stats"></div>
+</div>
+<script>
+(function () {
+  "use strict";
+  var $ = function (s) { return document.querySelector(s); };
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function rnd(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+  function shuffle(x) { for (var i = x.length - 1; i > 0; i--) { var j = rnd(0, i), t = x[i]; x[i] = x[j]; x[j] = t; } return x; }
+  function range(n) { var r = []; for (var i = 0; i < n; i++) r.push(i); return r; }
+  function fill(n, v) { var r = []; for (var i = 0; i < n; i++) r.push(v); return r; }
+  function mk(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+
+  /* ---------- тема сайта ---------- */
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  function parentTheme() {
+    try { if (window.parent && window.parent !== window) return window.parent.document.documentElement.getAttribute("saved-theme"); } catch (e) {}
+    return null;
+  }
+  function applyTheme() {
+    var t = parentTheme();
+    if (t !== "dark" && t !== "light") t = mq && mq.matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  }
+  applyTheme();
+  try {
+    if (window.parent && window.parent !== window) {
+      new MutationObserver(applyTheme).observe(window.parent.document.documentElement, { attributes: true, attributeFilter: ["saved-theme"] });
+    }
+  } catch (e) {}
+  if (mq && mq.addEventListener) mq.addEventListener("change", applyTheme);
+
+  /* ---------- высота iframe по содержимому ---------- */
+  var app = $("#app");
+  function fit() {
+    try {
+      var fe = window.frameElement;
+      if (fe) fe.style.height = Math.ceil(app.getBoundingClientRect().height) + 2 + "px";
+    } catch (e) {}
+  }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(app);
+  window.addEventListener("load", fit);
+
+  /* ---------- код на Python ---------- */
+  var CODE = {
+    bubble: [
+      "def bubble_sort(a):",
+      "    n = len(a)",
+      "    for i in range(n - 1):",
+      "        for j in range(n - 1 - i):",
+      "            if a[j] > a[j + 1]:",
+      "                a[j], a[j + 1] = a[j + 1], a[j]"
+    ],
+    selection: [
+      "def selection_sort(a):",
+      "    n = len(a)",
+      "    for i in range(n - 1):",
+      "        m = i",
+      "        for j in range(i + 1, n):",
+      "            if a[j] < a[m]:",
+      "                m = j",
+      "        a[i], a[m] = a[m], a[i]"
+    ],
+    insertion: [
+      "def insertion_sort(a):",
+      "    for i in range(1, len(a)):",
+      "        key = a[i]",
+      "        j = i - 1",
+      "        while j >= 0 and a[j] > key:",
+      "            a[j + 1] = a[j]",
+      "            j -= 1",
+      "        a[j + 1] = key"
+    ],
+    counting: [
+      "def counting_sort(a, k):",
+      "    count = [0] * (k + 1)",
+      "    for x in a:",
+      "        count[x] += 1",
+      "    result = []",
+      "    for v in range(k + 1):",
+      "        for _ in range(count[v]):",
+      "            result.append(v)",
+      "    return result"
+    ],
+    merge: [
+      "def merge(a, b):",
+      "    i, j = 0, 0",
+      "    result = []",
+      "    while i < len(a) and j < len(b):",
+      "        if a[i] <= b[j]:",
+      "            result.append(a[i])",
+      "            i += 1",
+      "        else:",
+      "            result.append(b[j])",
+      "            j += 1",
+      "    result += a[i:]",
+      "    result += b[j:]",
+      "    return result"
+    ]
+  };
+  function hl(line) {
+    return esc(line)
+      .replace(/\b(def|for|in|if|while|and|return|else)\b/g, '<span class="kw">$1</span>')
+      .replace(/\b(\d+)\b/g, '<span class="num">$1</span>');
+  }
+
+  /* ---------- генерация данных ---------- */
+  function makeArray(n, type) {
+    var pool = shuffle(range(n * 2).map(function (x) { return x + 2; })).slice(0, n);
+    if (type === "almost") {
+      pool.sort(function (p, q) { return p - q; });
+      var swaps = Math.max(1, Math.floor(n / 6));
+      for (var t = 0; t < swaps; t++) { var k = rnd(0, n - 2), tmp = pool[k]; pool[k] = pool[k + 1]; pool[k + 1] = tmp; }
+    } else if (type === "reversed") {
+      pool.sort(function (p, q) { return q - p; });
+    }
+    return pool;
+  }
+  function sortedRandom(len, lo, hi) {
+    var r = []; for (var i = 0; i < len; i++) r.push(rnd(lo, hi));
+    return r.sort(function (p, q) { return p - q; });
+  }
+
+  /* ---------- алгоритмы: каждый возвращает список кадров ---------- */
+  function genBubble(a0) {
+    var a = a0.slice(), n = a.length, done = fill(n, false), cmp = 0, sw = 0, fr = [];
+    function F(line, marks, msg) { fr.push({ a: a.slice(), marks: marks, done: done.slice(), line: line, msg: msg, cmp: cmp, sw: sw }); }
+    F(-1, {}, "Начальный массив. Сравниваем соседние элементы и меняем их местами, если они стоят неправильно.");
+    for (var i = 0; i < n - 1; i++) {
+      for (var j = 0; j < n - 1 - i; j++) {
+        cmp++;
+        var gt = a[j] > a[j + 1], m = {}; m[j] = "cmp"; m[j + 1] = "cmp";
+        F(4, m, "Проход i = " + i + ". Сравниваем a[" + j + "] = " + a[j] + " и a[" + (j + 1) + "] = " + a[j + 1] + ": " +
+          (gt ? a[j] + " > " + a[j + 1] + ", меняем местами" : a[j] + " < " + a[j + 1] + ", оставляем"));
+        if (gt) {
+          var t = a[j]; a[j] = a[j + 1]; a[j + 1] = t; sw++;
+          var s = {}; s[j] = "swap"; s[j + 1] = "swap";
+          F(5, s, "Поменяли местами: теперь a[" + j + "] = " + a[j] + ", a[" + (j + 1) + "] = " + a[j + 1]);
+        }
+      }
+      done[n - 1 - i] = true;
+      F(2, {}, "Проход i = " + i + " закончен: самый большой из оставшихся элементов (" + a[n - 1 - i] + ") «всплыл» на позицию " + (n - 1 - i));
+    }
+    done[0] = true;
+    F(-1, {}, "Готово! Сравнений: " + cmp + ", обменов: " + sw + ".");
+    return fr;
+  }
+
+  function genSelection(a0) {
+    var a = a0.slice(), n = a.length, done = fill(n, false), cmp = 0, sw = 0, fr = [];
+    function F(line, marks, msg) { fr.push({ a: a.slice(), marks: marks, done: done.slice(), line: line, msg: msg, cmp: cmp, sw: sw }); }
+    F(-1, {}, "Начальный массив. Находим минимум, ставим его в начало и повторяем для оставшейся части.");
+    for (var i = 0; i < n - 1; i++) {
+      var m = i, k = {}; k[m] = "special";
+      F(3, k, "Шаг i = " + i + ": ищем минимум среди a[" + i + "..." + (n - 1) + "]. Пока минимум – a[" + i + "] = " + a[i]);
+      for (var j = i + 1; j < n; j++) {
+        cmp++;
+        var less = a[j] < a[m], c = {}; c[m] = "special"; c[j] = "cmp";
+        F(5, c, "Сравниваем a[" + j + "] = " + a[j] + " с минимумом a[" + m + "] = " + a[m] + ": " +
+          (less ? a[j] + " < " + a[m] + ", нашли меньше" : a[j] + " > " + a[m] + ", минимум прежний"));
+        if (less) { m = j; var z = {}; z[m] = "special"; F(6, z, "Новый минимум: a[" + m + "] = " + a[m]); }
+      }
+      sw++;
+      var s = {}; s[i] = "swap"; s[m] = "swap";
+      if (m !== i) {
+        var t = a[i]; a[i] = a[m]; a[m] = t;
+        F(7, s, "Меняем местами a[" + i + "] и a[" + m + "]: минимум " + a[i] + " встаёт на позицию " + i);
+      } else {
+        F(7, s, "Минимум " + a[i] + " уже стоит на позиции " + i + ", обмен ничего не меняет");
+      }
+      done[i] = true;
+    }
+    done[n - 1] = true;
+    F(-1, {}, "Готово! Сравнений: " + cmp + ", обменов: " + sw + ". Последний элемент сам оказался на своём месте.");
+    return fr;
+  }
+
+  function genInsertion(a0) {
+    var a = a0.slice(), n = a.length, done = fill(n, false), cmp = 0, sw = 0, fr = [], sortedTo = 0;
+    function F(line, marks, msg) {
+      fr.push({ a: a.slice(), marks: marks, done: done.slice(), part: range(n).map(function (x) { return x <= sortedTo; }), line: line, msg: msg, cmp: cmp, sw: sw });
+    }
+    F(-1, {}, "Начальный массив. Слева растёт отсортированная часть: каждый следующий элемент вставляем в неё на своё место.");
+    for (var i = 1; i < n; i++) {
+      var key = a[i], pos = i, j = i - 1, k = {}; k[pos] = "special";
+      F(2, k, "Берём key = a[" + i + "] = " + key + " и ищем ему место в отсортированной части слева");
+      sortedTo = i;
+      while (true) {
+        var q = {};
+        if (j < 0) { q[pos] = "special"; F(4, q, "j = -1: дошли до начала массива, дальше сдвигать некуда"); break; }
+        cmp++;
+        var gt = a[j] > key; q[j] = "cmp"; q[pos] = "special";
+        F(4, q, "Сравниваем a[" + j + "] = " + a[j] + " и key = " + key + ": " +
+          (gt ? a[j] + " > " + key + ", сдвигаем " + a[j] + " вправо" : a[j] + " < " + key + ", место найдено"));
+        if (!gt) break;
+        a[pos] = a[j]; a[j] = key; sw++;
+        var s = {}; s[pos] = "swap"; s[j] = "special";
+        F(5, s, "a[" + pos + "] = a[" + j + "]: " + a[pos] + " сдвинулся вправо на позицию " + pos);
+        pos = j; j--;
+      }
+      var p = {}; p[pos] = "special";
+      F(7, p, "a[" + pos + "] = key: " + key + " встаёт на своё место. Отсортирована часть a[0..." + i + "]");
+    }
+    for (var d = 0; d < n; d++) done[d] = true;
+    F(-1, {}, "Готово! Сравнений: " + cmp + ", сдвигов: " + sw + ".");
+    return fr;
+  }
+
+  function genCounting(a, k) {
+    var n = a.length, count = fill(k + 1, null), result = fill(n, null), ops = 0, fr = [], r = 0;
+    function F(line, mA, mC, mR, msg) { fr.push({ a: a, count: count.slice(), result: result.slice(), mA: mA, mC: mC, mR: mR, line: line, msg: msg, ops: ops }); }
+    F(-1, {}, {}, {}, "Числа от 0 до " + k + ". Будем считать, сколько раз встречается каждое число.");
+    count = fill(k + 1, 0);
+    F(1, {}, {}, {}, "Создаём список count из k + 1 = " + (k + 1) + " нулей: count[v] – сколько раз встретилось число v");
+    for (var i = 0; i < n; i++) {
+      var x = a[i], mA = {}, mC = {}; count[x]++; ops++; mA[i] = "cmp"; mC[x] = "swap";
+      F(3, mA, mC, {}, "x = " + x + ": увеличиваем count[" + x + "], теперь count[" + x + "] = " + count[x]);
+    }
+    F(4, {}, {}, {}, "Подсчёт закончен. Теперь выписываем числа по порядку: каждое v столько раз, сколько оно встретилось");
+    for (var v = 0; v <= k; v++) {
+      ops++;
+      var mc = {}; mc[v] = "cmp";
+      if (count[v] === 0) { F(5, {}, mc, {}, "count[" + v + "] = 0: числа " + v + " не было, пропускаем"); continue; }
+      F(5, {}, mc, {}, "count[" + v + "] = " + count[v] + ": выписываем " + v + " столько раз");
+      for (var t = 0; t < count[v]; t++) {
+        result[r] = v; ops++;
+        var c2 = {}, r2 = {}; c2[v] = "special"; r2[r] = "swap";
+        F(7, {}, c2, r2, "Добавляем " + v + " в result (" + (t + 1) + " из " + count[v] + ")");
+        r++;
+      }
+    }
+    F(8, {}, {}, {}, "Готово! Операций: " + ops + " = 2·" + n + " + " + (k + 1) + ", то есть O(n + k). Ни одного сравнения элементов!");
+    return fr;
+  }
+
+  function genMerge(A, B) {
+    var R = [], i = 0, j = 0, cmp = 0, fr = [];
+    function F(line, mA, mB, mR, msg) { fr.push({ A: A, B: B, R: R.slice(), i: i, j: j, mA: mA, mB: mB, mR: mR, line: line, msg: msg, cmp: cmp }); }
+    F(-1, {}, {}, {}, "Два отсортированных списка. Указатели i и j показывают на самые маленькие ещё не взятые элементы.");
+    while (i < A.length && j < B.length) {
+      cmp++;
+      var le = A[i] <= B[j], ma = {}, mb = {}; ma[i] = "cmp"; mb[j] = "cmp";
+      F(4, ma, mb, {}, "Сравниваем a[" + i + "] = " + A[i] + " и b[" + j + "] = " + B[j] + ": " +
+        (le ? A[i] + " ≤ " + B[j] + ", берём из a" : A[i] + " > " + B[j] + ", берём из b"));
+      var mr = {};
+      if (le) { R.push(A[i]); i++; mr[R.length - 1] = "swap"; F(6, {}, {}, mr, "Добавили " + R[R.length - 1] + " в result и сдвинули i вправо"); }
+      else { R.push(B[j]); j++; mr[R.length - 1] = "swap"; F(9, {}, {}, mr, "Добавили " + R[R.length - 1] + " в result и сдвинули j вправо"); }
+    }
+    var restA = A.slice(i), restB = B.slice(j), m1 = {}, m2 = {};
+    for (var p = 0; p < restA.length; p++) { R.push(restA[p]); m1[R.length - 1] = "swap"; }
+    i = A.length;
+    F(10, {}, {}, m1, restA.length ? "Список b закончился. Добавляем остаток a целиком: " + restA.join(", ") : "Остаток a пуст, добавлять нечего");
+    for (var q = 0; q < restB.length; q++) { R.push(restB[q]); m2[R.length - 1] = "swap"; }
+    j = B.length;
+    F(11, {}, {}, m2, restB.length ? "Список a закончился. Добавляем остаток b целиком: " + restB.join(", ") : "Остаток b пуст, добавлять нечего");
+    F(12, {}, {}, {}, "Готово! Сравнений: " + cmp + ", элементов: " + R.length + ". Каждый элемент взят ровно один раз, поэтому O(n + m).");
+    return fr;
+  }
+
+  /* ---------- режимы ---------- */
+  var LEG = {
+    cmp: ["cmp", "сравниваем"], swap: ["swap", "меняем"], done: ["done", "на своём месте"],
+    min: ["special", "текущий минимум"], key: ["special", "key"], shift: ["swap", "сдвигаем"], part: ["part", "отсортированная часть"],
+    cur: ["cmp", "текущий элемент"], cnt: ["swap", "счётчик"], out: ["special", "выписываем"],
+    add: ["swap", "добавляем"], taken: ["taken", "уже взяты"]
+  };
+  var MODES = {
+    bubble: { title: "Сортировка пузырьком", kind: "bars", n: 10, gen: genBubble, code: CODE.bubble, legend: ["cmp", "swap", "done"], swName: "Обменов" },
+    selection: { title: "Сортировка выбором", kind: "bars", n: 10, gen: genSelection, code: CODE.selection, legend: ["min", "cmp", "swap", "done"], swName: "Обменов" },
+    insertion: { title: "Сортировка вставками", kind: "bars", n: 10, gen: genInsertion, code: CODE.insertion, legend: ["key", "cmp", "shift", "part", "done"], swName: "Сдвигов" },
+    counting: { title: "Сортировка подсчётом", kind: "counting", code: CODE.counting, legend: ["cur", "cnt", "out"] },
+    merge: { title: "Слияние двух отсортированных списков", kind: "merge", code: CODE.merge, legend: ["cmp", "add", "taken"] },
+    race: { title: "Гонка: три простые сортировки на одном массиве", kind: "race", n: 14, legend: ["cmp", "swap", "done"] }
+  };
+
+  var mode, M, frames = [], pos = 0, timer = null, data = null, arrType = "random";
+  var stage = $(".stage"), msgEl = $(".msg"), codeEl = $("pre.code"), statsEl = $(".stats");
+  var playBtn = $('[data-act="play"]'), speedEl = $('input[type="range"]'), typeSel = $(".arrtype select");
+
+  function legendHtml(keys) {
+    return keys.map(function (k) {
+      var l = LEG[k], color = l[0] === "taken" ? "var(--taken)" : "var(--" + l[0] + ")";
+      return '<span><i style="background:' + color + (l[0] === "taken" ? ";border:1px solid var(--border)" : "") + '"></i>' + esc(l[1]) + "</span>";
+    }).join("");
+  }
+
+  function newData() {
+    if (M.kind === "bars" || M.kind === "race") data = makeArray(M.n, arrType);
+    else if (M.kind === "counting") { data = range(10).map(function () { return rnd(0, 9); }); }
+    else if (M.kind === "merge") { data = { A: sortedRandom(5, 1, 25), B: sortedRandom(5, 1, 25) }; }
+  }
+
+  function build() {
+    stop();
+    if (M.kind === "bars") frames = M.gen(data);
+    else if (M.kind === "counting") frames = genCounting(data, 9);
+    else if (M.kind === "merge") frames = genMerge(data.A, data.B);
+    else if (M.kind === "race") {
+      frames = null;
+      M.lanes = [["Пузырьком", genBubble, "обменов"], ["Выбором", genSelection, "обменов"], ["Вставками", genInsertion, "сдвигов"]].map(function (d) {
+        var all = d[1](data), ops = [all[0]];
+        for (var t = 1; t < all.length; t++) {
+          var prev = ops[ops.length - 1], f = all[t];
+          if (f.cmp !== prev.cmp || f.sw !== prev.sw) ops.push(f);
+        }
+        ops.push(all[all.length - 1]);
+        return { name: d[0], frames: ops, swName: d[2], pos: 0, place: 0 };
+      });
+    }
+    pos = 0;
+    layout();
+    render();
+  }
+
+  function layout() {
+    stage.innerHTML = "";
+    var main = $(".main");
+    if (M.code) { main.classList.toggle("with-code", M.kind === "bars"); codeEl.style.display = ""; codeEl.innerHTML = M.code.map(function (l) { return "<div>" + (hl(l) || " ") + "</div>"; }).join(""); }
+    else { main.classList.remove("with-code"); codeEl.style.display = "none"; }
+    $(".arrtype").style.display = (M.kind === "bars" || M.kind === "race") ? "" : "none";
+    $('[data-act="back"]').style.display = M.kind === "race" ? "none" : "";
+    if (M.kind === "bars") stage.appendChild(barsEl(data.length));
+    else if (M.kind === "counting") {
+      var rows = mk("div", "rows");
+      rows.appendChild(rowEl("a", data.length, true));
+      rows.appendChild(rowEl("count", 10, true));
+      rows.appendChild(rowEl("result", data.length, true));
+      stage.appendChild(rows);
+    } else if (M.kind === "merge") {
+      var rows2 = mk("div", "rows");
+      rows2.appendChild(rowEl("a", data.A.length, false));
+      rows2.appendChild(rowEl("b", data.B.length, false));
+      rows2.appendChild(rowEl("result", data.A.length + data.B.length, true));
+      stage.appendChild(rows2);
+    } else if (M.kind === "race") {
+      var race = mk("div", "race");
+      M.lanes.forEach(function (ln) {
+        var lane = mk("div", "lane"); lane.appendChild(mk("h4", "", ln.name));
+        lane.appendChild(barsEl(data.length)); lane.appendChild(mk("div", "lstats"));
+        ln.el = lane; race.appendChild(lane);
+      });
+      stage.appendChild(race);
+    }
+  }
+  function barsEl(n) {
+    var bars = mk("div", "bars");
+    for (var i = 0; i < n; i++) {
+      var col = mk("div", "col");
+      col.appendChild(mk("div", "bar")); col.appendChild(mk("div", "val")); col.appendChild(mk("div", "idx", String(i)));
+      bars.appendChild(col);
+    }
+    return bars;
+  }
+  function rowEl(name, n, indexCaps) {
+    var row = mk("div", "row"); row.appendChild(mk("div", "row-name", name));
+    var cells = mk("div", "cells");
+    for (var i = 0; i < n; i++) {
+      var w = mk("div", "cellwrap");
+      w.appendChild(mk("div", "cap", indexCaps ? String(i) : ""));
+      w.appendChild(mk("div", "cell"));
+      if (!indexCaps) w.appendChild(mk("div", "cap ptr", ""));
+      cells.appendChild(w);
+    }
+    row.appendChild(cells);
+    return row;
+  }
+
+  function paintBars(barsBox, f, maxV) {
+    var cols = barsBox.children;
+    for (var i = 0; i < cols.length; i++) {
+      var bar = cols[i].children[0], val = cols[i].children[1];
+      var cls = f.marks[i] || (f.done[i] ? "done" : (f.part && f.part[i] ? "part" : ""));
+      bar.className = "bar" + (cls ? " " + cls : "");
+      bar.style.height = Math.round(12 + (f.a[i] / maxV) * 88) + "%";
+      val.textContent = f.a[i];
+    }
+  }
+  function paintCells(row, values, marks, extra) {
+    var wraps = row.querySelector(".cells").children;
+    for (var i = 0; i < wraps.length; i++) {
+      var cell = wraps[i].querySelector(".cell"), v = values[i];
+      var empty = v === null || v === undefined;
+      var cls = marks[i] || (extra ? extra(i) : "");
+      cell.className = "cell" + (empty ? " empty" : "") + (cls ? " " + cls : "");
+      cell.textContent = empty ? "·" : v;
+    }
+  }
+  function setLine(line) {
+    var lines = codeEl.children;
+    for (var i = 0; i < lines.length; i++) lines[i].className = i === line ? "cur" : "";
+  }
+
+  function render() {
+    if (M.kind === "race") return renderRace();
+    var f = frames[pos];
+    if (M.kind === "bars") {
+      paintBars(stage.querySelector(".bars"), f, Math.max.apply(null, data));
+      statsEl.innerHTML = "<span>Сравнений: <b>" + f.cmp + "</b></span><span>" + M.swName + ": <b>" + f.sw + "</b></span><span>Шаг <b>" + pos + "</b> из " + (frames.length - 1) + "</span>";
+    } else if (M.kind === "counting") {
+      var rows = stage.querySelectorAll(".row");
+      paintCells(rows[0], f.a, f.mA);
+      paintCells(rows[1], f.count, f.mC);
+      paintCells(rows[2], f.result, f.mR);
+      statsEl.innerHTML = "<span>Операций: <b>" + f.ops + "</b></span><span>n = " + f.a.length + ", k = 9</span><span>Шаг <b>" + pos + "</b> из " + (frames.length - 1) + "</span>";
+    } else if (M.kind === "merge") {
+      var r2 = stage.querySelectorAll(".row");
+      paintCells(r2[0], f.A, f.mA, function (i) { return i < f.i ? "taken" : ""; });
+      paintCells(r2[1], f.B, f.mB, function (i) { return i < f.j ? "taken" : ""; });
+      paintCells(r2[2], range(f.A.length + f.B.length).map(function (x) { return x < f.R.length ? f.R[x] : null; }), f.mR);
+      setPtr(r2[0], f.i, "i"); setPtr(r2[1], f.j, "j");
+      statsEl.innerHTML = "<span>Сравнений: <b>" + f.cmp + "</b></span><span>n + m = " + (f.A.length + f.B.length) + "</span><span>Шаг <b>" + pos + "</b> из " + (frames.length - 1) + "</span>";
+    }
+    msgEl.textContent = f.msg;
+    setLine(f.line);
+    updateButtons();
+  }
+  function setPtr(row, at, name) {
+    var caps = row.querySelectorAll(".cap.ptr");
+    for (var i = 0; i < caps.length; i++) caps[i].textContent = i === at ? "↑ " + name : "";
+  }
+
+  function renderRace() {
+    var maxV = Math.max.apply(null, data), finishedAll = true;
+    M.lanes.forEach(function (ln) {
+      var f = ln.frames[ln.pos], fin = ln.pos >= ln.frames.length - 1;
+      paintBars(ln.el.querySelector(".bars"), f, maxV);
+      ln.el.classList.toggle("finished", fin);
+      ln.el.querySelector(".lstats").innerHTML = "Сравнений: <b>" + f.cmp + "</b> · " + ln.swName + ": <b>" + f.sw + "</b><br>" +
+        (fin ? '<span class="place">✓ ' + ln.place + "-е место</span>, операций: " + (f.cmp + f.sw) : "идёт…");
+      if (!fin) finishedAll = false;
+    });
+    msgEl.textContent = finishedAll
+      ? "Финиш! Сравните число операций. Попробуйте почти отсортированный и обратный массив: результаты сильно изменятся."
+      : (pos === 0 ? "Каждый шаг – одна операция (сравнение или обмен) у каждой сортировки. Нажмите «Авто»." : "Шаг " + pos);
+    statsEl.innerHTML = "<span>Элементов: <b>" + data.length + "</b></span><span>n · (n - 1) / 2 = <b>" + (data.length * (data.length - 1) / 2) + "</b></span>";
+    updateButtons();
+  }
+
+  function atEnd() {
+    if (M.kind === "race") return M.lanes.every(function (l) { return l.pos >= l.frames.length - 1; });
+    return pos >= frames.length - 1;
+  }
+  function stepForward() {
+    if (atEnd()) return false;
+    pos++;
+    if (M.kind === "race") {
+      var newly = [];
+      M.lanes.forEach(function (l) { if (l.pos < l.frames.length - 1) { l.pos++; if (l.pos >= l.frames.length - 1) newly.push(l); } });
+      if (newly.length) {
+        var place = M.lanes.filter(function (l) { return l.place > 0; }).length + 1;
+        newly.forEach(function (l) { l.place = place; });
+      }
+    }
+    render();
+    return true;
+  }
+  function stepBack() { if (M.kind !== "race" && pos > 0) { pos--; render(); } }
+  function delay() { return Math.round(1300 * Math.pow(0.04, (speedEl.value - 1) / 9)); }
+  function tick() { if (stepForward() && !atEnd()) timer = setTimeout(tick, delay()); else stop(); }
+  function play() { if (atEnd()) reset(); timer = setTimeout(tick, 0); playBtn.textContent = "⏸ Пауза"; }
+  function stop() { if (timer) clearTimeout(timer); timer = null; playBtn.textContent = "▶ Авто"; }
+  function reset() { stop(); if (M.kind === "race") { build(); } else { pos = 0; render(); } }
+  function updateButtons() {
+    $('[data-act="back"]').disabled = pos === 0;
+    $('[data-act="step"]').disabled = atEnd();
+  }
+
+  $(".controls").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    var act = b.getAttribute("data-act");
+    if (act === "play") { timer ? stop() : play(); }
+    else if (act === "step") { stop(); stepForward(); }
+    else if (act === "back") { stop(); stepBack(); }
+    else if (act === "reset") reset();
+    else if (act === "new") { newData(); build(); }
+  });
+  typeSel.addEventListener("change", function () { arrType = typeSel.value; newData(); build(); });
+  document.addEventListener("keydown", function (e) {
+    if (e.target.tagName === "SELECT" || e.target.tagName === "INPUT") return;
+    if (e.key === " ") { e.preventDefault(); timer ? stop() : play(); }
+    else if (e.key === "ArrowRight") { stop(); stepForward(); }
+    else if (e.key === "ArrowLeft") { stop(); stepBack(); }
+  });
+
+  function init() {
+    var h = (location.hash || "").replace("#", "");
+    mode = MODES[h] ? h : "bubble";
+    M = MODES[mode];
+    $(".title").textContent = M.title;
+    $(".legend").innerHTML = legendHtml(M.legend);
+    if (mode === "race") { arrType = "random"; typeSel.value = "random"; }
+    newData();
+    build();
+    fit();
+  }
+  window.addEventListener("hashchange", init);
+  init();
+})();
+</script>
+</body>
+</html>
