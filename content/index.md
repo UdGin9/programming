@@ -16,6 +16,10 @@
 6. [Строки, автопроверка и сложность алгоритмов](<Lesson 6 - Information technology and programming - ИАИТ-111>)
 7. [Сортировки](<Lesson 7 - Information technology and programming - ИАИТ-111>)
 
+## 📊 Контрольные точки
+
+- [КТ-2: результаты контеста 1](<КТ-2. Контест 1>)
+
 ## ➕ Доп задания
 
 1. [UV, flask и верстка](<Доп 1 - UV, flask и верстка>)
